@@ -1,0 +1,108 @@
+class FindHomeTask(Task):
+    """
+    A task to find the home coordinates.
+    """
+    def __init__(self):
+        super().__init__()
+
+    def run(self, blackboard):
+        """
+        Run the task to find home coordinates.
+        
+        :param blackboard: The blackboard containing shared data
+        :return: True if home coordinates are found, False otherwise
+        """
+        home_coordinates = blackboard.get_in_environment(HOME_COORDINATES)
+        current_coordinates = blackboard.get_in_environment(CURRENT_COORDINATES)
+
+        try:
+            if home_coordinates != current_coordinates:
+                x = home_coordinates[0] - current_coordinates[0]
+                y = home_coordinates[1] - current_coordinates[1]
+                
+                home_path = ''
+                if x > 0:
+                    home_path += 'right ' * x
+                elif x < 0:
+                    home_path += 'left ' * abs(x)
+                if y > 0:
+                    home_path += 'up ' * y
+                elif y < 0:
+                    home_path += 'down ' * abs(y)
+                blackboard.set_in_environment(HOME_PATH, home_path.strip()) # store home path in the blackboard
+            else:
+                blackboard.set_in_environment(HOME_PATH, "") # stored home path as empty because we are already at home
+            return True
+        except Exception as e:
+            print(f"Error in FindHomeTask: {e}")
+            return False
+
+class GoHomeTask(Task):
+    """
+    A task to go home.
+    """
+    def __init__(self):
+        super().__init__()
+
+    def run(self, blackboard):
+        """
+        Run the task to go home.
+        
+        :param blackboard: The blackboard containing shared data
+        :return: True if the vacuum reaches home, False otherwise
+        """
+        home_path = blackboard.get_in_environment(HOME_PATH)
+        if home_path:
+            print(f"Going home via: {home_path}")
+            blackboard.set_in_environment(HOME_PATH, "")
+            return True
+        return False
+            
+class DockTask(Task):
+    """
+    A task to dock the vacuum.
+    """
+    def __init__(self):
+        super().__init__()
+
+    def run(self, blackboard):
+        """
+        Run the task to dock the vacuum.
+        
+        :param blackboard: The blackboard containing shared data
+        :return: True if docking is successful, False otherwise
+        """
+        try:
+            print("Docking the vacuum to recharge.")
+            blackboard.set_in_environment(BATTERY_LEVEL, 100)  # assume docking recharges battery to 100 in one time step
+            return True
+        except Exception as e:
+            print(f"Error in DockTask: {e}")
+            return False
+
+class CleanSpotTask(Task):
+    """
+    A task to clean a specific spot.
+    """
+    def __init__(self):
+        super().__init__()
+
+    def run(self, blackboard):
+        """
+        Run the task to clean a spot.
+        
+        :param blackboard: The blackboard containing shared data
+        :return: True if the spot is cleaned, False otherwise
+        """
+        dusty_spot_sensor = blackboard.get_in_environment(DUSTY_SPOT_SENSOR)
+        if dusty_spot_sensor:
+            dusty_spot_coordinates = (random.randint(0, 10), random.randint(0, 10))  # simulate a random dusty spot
+            blackboard.set_in_environment(DUSTY_SPOT_COORDINATES, dusty_spot_coordinates)
+            current_coordinates = blackboard.get_in_environment(CURRENT_COORDINATES)
+            print(f"Traveling from {current_coordinates} to {dusty_spot_coordinates} to clean the spot.")
+            print("Cleaning the dusty spot.")
+            blackboard.set_in_environment(DUSTY_SPOT_SENSOR, False)
+            return True
+        else:
+            print("No dusty spot to clean.")
+            return False
