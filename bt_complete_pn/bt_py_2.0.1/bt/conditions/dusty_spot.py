@@ -1,5 +1,5 @@
 import bt_library as btl
-from ..globals import DUSTY_SPOT_SENSOR, CURRENT_COORDINATES
+from ..globals import DUSTY_SPOT_SENSOR, CURRENT_COORDINATES, BATTERY_LEVEL
 import random
 import turtle
 
@@ -24,6 +24,10 @@ class DustySpot(btl.Condition):
             
             # Update current coordinates in the blackboard
             blackboard.set_in_environment(CURRENT_COORDINATES, dusty_spot)
+
+            for _ in range(5): 
+                self.print_message("Cleaning...")
+                blackboard.set_in_environment(BATTERY_LEVEL, blackboard.get_in_environment(BATTERY_LEVEL, 0) - 1)
 
             return self.report_succeeded(blackboard)
         else:

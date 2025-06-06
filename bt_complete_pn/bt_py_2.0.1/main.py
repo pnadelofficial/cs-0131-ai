@@ -58,10 +58,10 @@ while not done:
     if current_battery == 0: # Should never be met
         done = True
     
-     # If the robot has done general cleaning four times or spot cleaning five times it will stop
-    if times_general == 4:
+     # If the robot has done general cleaning 10 times or spot cleaning 10 times it will stop
+    if times_general == 10:
         print("Cleaned the whole room! You're welcome...")
         done = True
-    if times_spot == 5:
+    if times_spot == 10:
         print("Piles of dirt eliminated! Try to be neater next time...")
         done = True

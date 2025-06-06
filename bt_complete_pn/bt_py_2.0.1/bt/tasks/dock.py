@@ -16,6 +16,6 @@ class Dock(btl.Task):
                 time.sleep(.5)
             self.print_message("Charging...")
         self.print_message("Battery fully charged!")
-        blackboard.set_in_environment(BATTERY_LEVEL, 100)  # assuming one time step to recharge to 100
+        blackboard.set_in_environment(BATTERY_LEVEL, 100)  # assuming one time step to recharge -- doesn't always reach 100%
 
         return self.report_succeeded(blackboard)
