@@ -3,7 +3,7 @@ from ..globals import DUSTY_SPOT_SENSOR
 
 class DustySpot(btl.Condition):
     """
-    Implementation of the condition "Spot Cleaning".
+    Implementation of the condition "Dusty Spot".
     """
     def run(self, blackboard: btl.Blackboard) -> btl.ResultEnum:
         self.print_message("Checking a dusty spot")

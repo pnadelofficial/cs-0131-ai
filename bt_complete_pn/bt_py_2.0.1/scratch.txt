@@ -106,3 +106,34 @@ class CleanSpotTask(Task):
         else:
             print("No dusty spot to clean.")
             return False
+
+
+
+        # caculate distance to spot
+        dist_x = abs(spot_coords[0] - curr_coords[0])
+        dist_y = abs(spot_coords[1] - curr_coords[1])
+        # determine direction to move
+        if spot_coords[0] < curr_coords[0]:
+            dist_x = -dist_x
+            direction_x = "Left"
+        else:
+            dist_x = dist_x
+            direction_x = "Right"
+        if spot_coords[1] < curr_coords[1]:
+            dist_y = -dist_y
+            direction_y = "Down"
+        else:
+            dist_y = dist_y
+            direction_y = "Up"
+        path_string = f"{dist_x} units {direction_x}, {dist_y} units {direction_y}"
+        self.print_message(path_string)
+
+        # Move turtle to the spot
+        turtle.forward(dist_x)
+        time.sleep(1)
+        if spot_coords[1] > curr_coords[1]:
+            turtle.left(-90)
+        else:
+            turtle.left(90)
+        turtle.forward(dist_y)
+        time.sleep(1)
