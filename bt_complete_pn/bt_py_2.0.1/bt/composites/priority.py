@@ -26,10 +26,10 @@ class Priority(btl.Composite):
         for child_position, (child, prio) in enumerate(child_priorities):
             self.print_message(f"Running child {child.pretty_id} with priority: {prio}")
             result_child = child.run(blackboard)
-            # if result_child == btl.ResultEnum.SUCCEEDED:
-            #     return result_child
+            if result_child == btl.ResultEnum.SUCCEEDED:
+                return result_child
 
-            # if result_child == btl.ResultEnum.RUNNING:
-            #     return result_child
+            if result_child == btl.ResultEnum.RUNNING:
+                return result_child
 
-        return result_child# self.report_failed(blackboard, 0)
+        return self.report_failed(blackboard, 0)
