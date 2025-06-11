@@ -56,14 +56,18 @@ class TreeNode:
         The gap heuristic for the state
         """
         gaps = 0
-        for i, s in enumerate(self.state):
-            if i+1 != len(self.state): # Avoids IndexError for last pancake
-                this_pancake = s
-                # Check gaps below
-                next_pancake = self.state[i+1]
-                if abs(this_pancake - next_pancake) > 1: # Gap! Not adjacent
-                    gaps += 1
+        for prev, curr in zip(self.state, self.state[1:]):
+            if abs(curr - prev) != 1:
+                gaps +=1
         return gaps
+        # for i, s in enumerate(self.state):
+        #     if i+1 != len(self.state): # Avoids IndexError for last pancake
+        #         this_pancake = s
+        #         # Check gaps below
+        #         next_pancake = self.state[i+1]
+        #         if abs(this_pancake - next_pancake) != 1: # Gap! Not adjacent
+        #             gaps += 1
+        # return gaps
 
     def flip(self, k):
         """
@@ -141,51 +145,64 @@ class AStar:
         self.length = len(initial_state)
         self.visited = set() # Will keep track of the visited configurations
         self.position = 0 # Will keep track of the order of the configurations
-        self.pq = []
+        self.pq = PriorityQueue()
 
         self.root = TreeNode(initial_state, None, self.position)
-        heapq.heappush(self.pq, self.root)
+        self.pq.push(self.root)
         self.position += 1
     
     def search(self):
-        done = True
-        while done:
-            if len(self.pq) == 0:
-                print("All avenues checked. No solution possible.")
-                return
-            current_node = heapq.heappop(self.pq)
+        while True:
+            if self.pq.is_empty():
+                self.solution = False
+                return 
+            
+            current_node = self.pq.pop()
             self.visited.add(tuple(current_node.state))
+
             if current_node.heuristic() == 0:
-                print("Solution found.")
-                self.print_solution()
+                self.solution = current_node
                 return
+            
             self.generate_successors(current_node)
     
     def generate_successors(self, current_node:TreeNode):
-        for i in range(1, self.length):
+        for i in range(1, self.length+1):
             flipped = current_node.flip(i)
             flipped.parent = current_node
             flipped.position = self.position
 
-            if (tuple(flipped.state) not in self.visited) and (flipped.state not in [n.state for n in self.pq]):
-                heapq.heappush(self.pq, flipped)
-            elif flipped.state in [n.state for n in self.pq]:
-                for node in self.pq:
-                    if (node.state == flipped.state) and (node.total_cost() < flipped.total_cost()):
-                        self.pq[self.pq.index(node)] = flipped
+            if (tuple(flipped.state) not in self.visited) and (not self.pq.has(flipped.state)):
+                self.pq.push(flipped)
+            
+            if self.pq.has(flipped.state):
+                self.pq.replace(flipped)
             
             self.position += 1
 
+    def print_solution(self):
+        if not self.solution:
+            print("No solution found")
+        elif isinstance(self.solution, TreeNode):
+            steps = []
+            current_node = self.solution
 
-    def print_solution():
-        pass
+            try:
+                while current_node.state is not None:
+                    steps.append(current_node)
+                    current_node = current_node.parent
+            except AttributeError:
+                for step in steps[::-1]:
+                    print(step.state)
 
 def main():
     test_stack = [i for i in range(1, 11)]
     random.shuffle(test_stack)
+    print(f"Initial stack: {test_stack}")
 
     astar = AStar(test_stack)
     astar.search()
+    astar.print_solution()
 
 if __name__ == '__main__':
     main()
