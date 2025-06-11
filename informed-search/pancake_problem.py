@@ -78,6 +78,51 @@ class TreeNode:
         full = flipped + rest # Concatenating the flipped part with the rest of the stack
         return TreeNode(full, None, None)
 
+class PriorityQueue:
+    """
+    PriorityQueue Class
+    -------------------
+    This class implements a priority queue for the A* algorithm, using a min-heap.
+    """
+    def __init__(self):
+        self.pq = []
+
+    def push(self, item):
+        heapq.heappush(self.pq, item)
+
+    def pop(self):
+        return heapq.heappop(self.pq)
+
+    def is_empty(self):
+        return len(self.pq) == 0
+    
+    def replace(self, item):
+        """
+        Replaces the top item in the priority queue with a new item if the new item has a lower total cost.
+        
+        Args
+        ----
+        item: The new item to be added to the priority queue
+        """
+        if not self.is_empty() and item < self.pq[0]:
+            heapq.heapreplace(self.pq, item)
+        else:
+            self.push(item)
+        
+    def has(self, state):
+        """
+        Checks if the priority queue contains a state.
+        
+        Args
+        ----
+        state: The state to check for in the priority queue
+        
+        Returns
+        -------
+        True if the state is in the priority queue, False otherwise
+        """
+        return any(node.state == state for node in self.pq)
+
 class AStar:
     """
     A* Class
