@@ -1,7 +1,10 @@
 import argparse
 import heapq
 import random
-from typing import Iterable # , Self
+from typing import Iterable, Self
+import time
+
+GOLD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 class TreeNode:
     """
@@ -9,7 +12,7 @@ class TreeNode:
     ~~~~~~~~~~~~~~
     This class represents a single stack configuation, along with the series of actions taken to arrive at this state. 
     """
-    def __init__(self, state:Iterable, parent, position:int):
+    def __init__(self, state:Iterable, parent:Self, position:int):
         """
         Creates a new TreeNode object
 
@@ -22,7 +25,7 @@ class TreeNode:
         self.state = state
         self.parent = parent
         self.position = position
-
+        self.insertion = None
         self.backward_cost = 0 # Setting this to be 0 by default, but will be filled in later
     
     def __lt__(self, other):
@@ -32,10 +35,19 @@ class TreeNode:
             return self.position < other.position
         return my_total_cost < others_total_cost
 
+    def __gt__(self, other):
+        my_total_cost = self.total_cost()
+        others_total_cost = other.total_cost()
+        if my_total_cost == others_total_cost:
+            return self.position > other.position
+        return my_total_cost > others_total_cost
 
-    # less than
-    # greater than
-    # equals operators
+    def __eq__(self, other):
+        my_total_cost = self.total_cost()
+        others_total_cost = other.total_cost()
+        if my_total_cost == others_total_cost:
+            return self.position == other.position
+        return my_total_cost == others_total_cost
 
     def total_cost(self):
         """
@@ -60,14 +72,6 @@ class TreeNode:
             if abs(curr - prev) != 1:
                 gaps +=1
         return gaps
-        # for i, s in enumerate(self.state):
-        #     if i+1 != len(self.state): # Avoids IndexError for last pancake
-        #         this_pancake = s
-        #         # Check gaps below
-        #         next_pancake = self.state[i+1]
-        #         if abs(this_pancake - next_pancake) != 1: # Gap! Not adjacent
-        #             gaps += 1
-        # return gaps
 
     def flip(self, k):
         """
@@ -77,9 +81,13 @@ class TreeNode:
         -------
         A new state of the stack with the top k elements flipped
         """
+        self.insertion = k
+        
         flipped = self.state[:k][::-1] # Cutting the first k elements and reversing them
         rest = self.state[k:] # Keeping the rest of the stack unchanged
         full = flipped + rest # Concatenating the flipped part with the rest of the stack
+        
+        self.backward_cost += k
         return TreeNode(full, None, None)
 
 class PriorityQueue:
@@ -160,7 +168,7 @@ class AStar:
             current_node = self.pq.pop()
             self.visited.add(tuple(current_node.state))
 
-            if current_node.heuristic() == 0:
+            if current_node.state == GOLD:
                 self.solution = current_node
                 return
             
@@ -193,16 +201,21 @@ class AStar:
                     current_node = current_node.parent
             except AttributeError:
                 for step in steps[::-1]:
-                    print(step.state)
+                    print(step.state, step.insertion)
 
 def main():
     test_stack = [i for i in range(1, 11)]
     random.shuffle(test_stack)
     print(f"Initial stack: {test_stack}")
 
+    curr_time = time.time()
+
     astar = AStar(test_stack)
     astar.search()
     astar.print_solution()
+
+    elapsed_time = time.time() - curr_time
+    print(round(elapsed_time, 4), "seconds")
 
 if __name__ == '__main__':
     main()
