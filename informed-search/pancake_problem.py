@@ -9,7 +9,7 @@ GOLD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 class TreeNode:
     """
     TreeNode Class
-    ~~~~~~~~~~~~~~
+    --------------
     This class represents a single stack configuation, along with the series of actions taken to arrive at this state. 
     """
     def __init__(self, state:Iterable, parent:Self, position:int):
