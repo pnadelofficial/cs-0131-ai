@@ -201,12 +201,15 @@ class AStar:
                     current_node = current_node.parent
             except AttributeError:
                 for step in steps[::-1]:
-                    print(step.state, step.insertion)
+                    print(f"Current stack: {step.state}")
+                print()
+                print("Pancake problem solved!")
 
 def main():
     test_stack = [i for i in range(1, 11)]
     random.shuffle(test_stack)
     print(f"Initial stack: {test_stack}")
+    print()
 
     curr_time = time.time()
 
@@ -215,7 +218,7 @@ def main():
     astar.print_solution()
 
     elapsed_time = time.time() - curr_time
-    print(round(elapsed_time, 4), "seconds")
+    print(f"Pancake problem completed in {round(elapsed_time, 4)} seconds")
 
 if __name__ == '__main__':
     main()
