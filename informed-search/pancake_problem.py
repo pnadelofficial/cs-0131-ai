@@ -62,8 +62,6 @@ class PriorityQueue:
                 continue
             if self.state2node.get(item.state) == item:
                 del self.state2node[item.state]
-        # item = heapq.heappop(self.pq)
-        # del self.state2node[item.state]
             return item
         return None
 
