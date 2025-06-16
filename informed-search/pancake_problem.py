@@ -89,7 +89,7 @@ class TreeNode:
         full = flipped + rest # Concatenating the flipped part with the rest of the stack
         
         self.state = full
-        self.backward_cost = k
+        self.backward_cost += k
         # flipped_node = TreeNode(full, None, None, self.ucs)
         # flipped_node.backward_cost = k
         # return flipped_node
