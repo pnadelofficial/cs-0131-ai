@@ -12,7 +12,7 @@ def gap_heuristic(state):
             gaps +=1
     return gaps
 
-def no_heuristic():
+def no_heuristic(state):
     return 0
 
 class PancakeStack:
@@ -22,6 +22,8 @@ class PancakeStack:
         self.added = added
         self.b_cost = b_cost
         self.heuristic = heuristic
+
+        self.obsolete = False
 
     def __lt__(self, other):
         my_total_cost = self.total_cost()
@@ -40,7 +42,8 @@ class PancakeStack:
             state=new_state,
             parent=self,
             added=self.added + 1,
-            b_cost=new_b_cost
+            b_cost=new_b_cost,
+            heuristic=self.heuristic
         )
 
 class PriorityQueue:
@@ -53,9 +56,16 @@ class PriorityQueue:
         self.state2node[item.state] = item
     
     def pop(self):
-        item = heapq.heappop(self.pq)
-        del self.state2node[item.state]
-        return item
+        while self.pq:
+            item = heapq.heappop(self.pq)
+            if item.obsolete:
+                continue
+            if self.state2node.get(item.state) == item:
+                del self.state2node[item.state]
+        # item = heapq.heappop(self.pq)
+        # del self.state2node[item.state]
+            return item
+        return None
 
     def is_empty(self):
         return len(self.pq) == 0
@@ -86,6 +96,9 @@ class AStar:
                 return
         
             current = self.pq.pop()
+            if current is None: 
+                return
+            
             self.visited.add(current.state) 
 
             if current.state == GOLD:
@@ -106,6 +119,7 @@ class AStar:
             else:
                 possible_existing_stack = self.pq.get_node_with_state(successor.state)
                 if possible_existing_stack and (successor < possible_existing_stack):
+                    possible_existing_stack.obsolete = True
                     self.pq.push(successor)
 
     def print_results(self):
