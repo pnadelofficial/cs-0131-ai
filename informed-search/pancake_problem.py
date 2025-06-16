@@ -12,7 +12,7 @@ class TreeNode:
     --------------
     This class represents a single stack configuation, along with the series of actions taken to arrive at this state. 
     """
-    def __init__(self, state:Iterable, parent:Self, position:int):
+    def __init__(self, state:Iterable, parent:Self, position:int, ucs:bool):
         """
         Creates a new TreeNode object
 
@@ -27,6 +27,7 @@ class TreeNode:
         self.position = position
         self.insertion = None
         self.backward_cost = 0 # Setting this to be 0 by default, but will be filled in later
+        self.ucs = ucs
     
     def __lt__(self, other):
         my_total_cost = self.total_cost()
@@ -57,6 +58,8 @@ class TreeNode:
         -------
         The total cost of the flip
         """
+        if self.ucs:
+            return self.backward_cost
         return self.heuristic() + self.backward_cost
 
     def heuristic(self):
@@ -88,7 +91,7 @@ class TreeNode:
         full = flipped + rest # Concatenating the flipped part with the rest of the stack
         
         self.backward_cost += k
-        return TreeNode(full, None, None)
+        return TreeNode(full, None, None, self.ucs)
 
 class PriorityQueue:
     """
@@ -133,6 +136,7 @@ class PriorityQueue:
         -------
         True if the state is in the priority queue, False otherwise
         """
+        # print(f"In has, length pq: {len(self.pq)}")
         return any(node.state == state for node in self.pq)
 
 class AStar:
@@ -141,7 +145,7 @@ class AStar:
     --------
     This call implements the A* algorithm for a stack of pancakes.
     """
-    def __init__(self, initial_state:Iterable):
+    def __init__(self, initial_state:Iterable, ucs:bool):
         """
         Creates a new A* instance with the initial state of the pancake stack
 
@@ -151,11 +155,13 @@ class AStar:
         """
         self.initial_state = initial_state
         self.length = len(initial_state)
+        self.ucs = ucs
+
         self.visited = set() # Will keep track of the visited configurations
         self.position = 0 # Will keep track of the order of the configurations
         self.pq = PriorityQueue()
 
-        self.root = TreeNode(initial_state, None, self.position)
+        self.root = TreeNode(initial_state, None, self.position, self.ucs)
         self.pq.push(self.root)
         self.position += 1
     
@@ -173,6 +179,12 @@ class AStar:
                 return
             
             self.generate_successors(current_node)
+            
+            # debugging
+            if len(self.pq.pq) > 20:
+                print([node.state for node in self.pq.pq])
+                print(self.visited)
+                break
     
     def generate_successors(self, current_node:TreeNode):
         for i in range(1, self.length+1):
@@ -213,7 +225,7 @@ def main():
 
     curr_time = time.time()
 
-    astar = AStar(test_stack)
+    astar = AStar(test_stack, ucs=True)
     astar.search()
     astar.print_solution()
 
