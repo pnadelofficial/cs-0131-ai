@@ -3,6 +3,7 @@ import heapq
 import random
 from typing import Iterable, Self
 import time
+import copy
 
 GOLD = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -25,7 +26,6 @@ class TreeNode:
         self.state = state
         self.parent = parent
         self.position = position
-        self.insertion = None
         self.backward_cost = 0 # Setting this to be 0 by default, but will be filled in later
         self.ucs = ucs
     
@@ -58,8 +58,6 @@ class TreeNode:
         -------
         The total cost of the flip
         """
-        if self.ucs:
-            return self.backward_cost
         return self.heuristic() + self.backward_cost
 
     def heuristic(self):
@@ -70,6 +68,8 @@ class TreeNode:
         -------
         The gap heuristic for the state
         """
+        if self.ucs:
+            return 0
         gaps = 0
         for prev, curr in zip(self.state, self.state[1:]):
             if abs(curr - prev) != 1:
@@ -84,14 +84,15 @@ class TreeNode:
         -------
         A new state of the stack with the top k elements flipped
         """
-        self.insertion = k
-        
         flipped = self.state[:k][::-1] # Cutting the first k elements and reversing them
         rest = self.state[k:] # Keeping the rest of the stack unchanged
         full = flipped + rest # Concatenating the flipped part with the rest of the stack
         
-        self.backward_cost += k
-        return TreeNode(full, None, None, self.ucs)
+        self.state = full
+        self.backward_cost = k
+        # flipped_node = TreeNode(full, None, None, self.ucs)
+        # flipped_node.backward_cost = k
+        # return flipped_node
 
 class PriorityQueue:
     """
@@ -136,8 +137,10 @@ class PriorityQueue:
         -------
         True if the state is in the priority queue, False otherwise
         """
-        # print(f"In has, length pq: {len(self.pq)}")
-        return any(node.state == state for node in self.pq)
+        for node in self.pq:
+            if node.state == state:
+                return True
+        return False
 
 class AStar:
     """
@@ -145,7 +148,7 @@ class AStar:
     --------
     This call implements the A* algorithm for a stack of pancakes.
     """
-    def __init__(self, initial_state:Iterable, ucs:bool):
+    def __init__(self, initial_state:Iterable, ucs:bool=False):
         """
         Creates a new A* instance with the initial state of the pancake stack
 
@@ -179,23 +182,18 @@ class AStar:
                 return
             
             self.generate_successors(current_node)
-            
-            # debugging
-            if len(self.pq.pq) > 20:
-                print([node.state for node in self.pq.pq])
-                print(self.visited)
-                break
     
     def generate_successors(self, current_node:TreeNode):
-        for i in range(1, self.length+1):
-            flipped = current_node.flip(i)
+        for i in range(2, self.length):
+            flipped = copy.deepcopy(current_node)
+            flipped.flip(i)
             flipped.parent = current_node
             flipped.position = self.position
 
             if (tuple(flipped.state) not in self.visited) and (not self.pq.has(flipped.state)):
                 self.pq.push(flipped)
             
-            if self.pq.has(flipped.state):
+            elif self.pq.has(flipped.state):
                 self.pq.replace(flipped)
             
             self.position += 1
@@ -225,7 +223,7 @@ def main():
 
     curr_time = time.time()
 
-    astar = AStar(test_stack, ucs=True)
+    astar = AStar(test_stack, ucs=False)
     astar.search()
     astar.print_solution()
 
