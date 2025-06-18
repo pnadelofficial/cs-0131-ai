@@ -3,8 +3,7 @@ import random
 import heapq
 import time
 from typing import Tuple, Self, Union
-
-GOLD = (1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
+from functools import partial
 
 def gap_heuristic(state:Tuple) -> int:
     """
@@ -28,7 +27,55 @@ def no_heuristic(state:Tuple) -> int:
     Returns:
         int: Always returns None as the UCS algorithm ignores heuristics
     """
-    return None
+    return
+
+def top_heuristic(state:Tuple) -> int:
+    """
+    Counts the number of pancakes that are not in their correct final position
+    Args:
+        state (tuple): Order of pancakes
+    Returns:
+        int: The number of pancakes that are not in their correct final position
+    """
+    top = 0
+    for i, p in enumerate(state): # align indicies and pancakes
+        if i+1 != p: # must add one because index starts at 0
+            top += 1 # increment top
+    return top
+
+def top_prime_heuristic(state:Tuple) -> int:
+    """
+    Count the pairs of adjecent pancakes that are not in the proper order
+    Args:
+        state (tuple): Order of pancakes
+    Returns:
+        int: The number of pairs of adjecent pancakes not in the proper order
+    """
+    pairs = 0
+    for p1, p2 in zip(state, state[1:]): # pythonic way to compare pancake placements in a stack, similar to gap, but counting pairs not gaps
+        if p2 != p1 + 1: # non-adjecent pancakes found! 
+            pairs += 1 # increment pairs
+    return pairs
+
+def l_top_prime_heuristic(state:Tuple, l:int) -> int:
+    """
+    Counts the l length runs of adjecent pancakes that are not in the proper order
+    Args:
+        state (tuple): Order of pancakes
+    Returns:
+        int: The number of l length runs that are not in proper order
+    """
+    ls = 0
+    for i in range(len(state) - l + 1):
+        sub = state[i:i+l] # create "batches" of l runs to test if they are adjecent
+        is_adjecent = all( # checks if all numbers in the run are adjecent
+            sub[j+1] == sub[j] + 1 # is the next number equal to the current number + 1
+            for j # the current number sub
+            in range(l-1) # iterating through length l run
+        ) 
+        if not is_adjecent:
+            ls += 1 # increment ls
+    return ls 
 
 class PancakeStack:
     """
@@ -248,6 +295,9 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(dest="stack", nargs="*", type=int, default=[])
     parser.add_argument("-u", "--ucs", action="store_true")
+    parser.add_argument("-t", "--top", action="store_true")
+    parser.add_argument("-p", "--topprime", action="store_true")
+    parser.add_argument("-l", "--ltopprime", type=int)
     args = parser.parse_args()
 
     stack = args.stack
@@ -258,6 +308,13 @@ def main():
 
     if args.ucs:
         astar = AStar(stack, heuristic=no_heuristic)
+    elif args.top:
+        astar = AStar(stack, heuristic=top_heuristic)
+    elif args.topprime:
+        astar = AStar(stack, heuristic=top_prime_heuristic)
+    elif args.ltopprime:
+        l_top_prime_partial = partial(l_top_prime_heuristic, l=args.ltopprime) # setting l with partial as heuristic must take a callable
+        astar = AStar(stack, heuristic=l_top_prime_partial)
     else:
         astar = AStar(stack, heuristic=gap_heuristic)
 
