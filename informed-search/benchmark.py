@@ -74,7 +74,6 @@ plt.clf()
 ## elapsed box plot
 plt.figure(figsize=(7, 5))
 data = np.array([[e[0] for e in results[heuristic]] for heuristic in HEURISTICS]).T
-print(data.shape)
 plt.boxplot(data, tick_labels=HEURISTICS.keys(), patch_artist=True)
 plt.title("Elasped time to sort")
 plt.xlabel("Heuristic")

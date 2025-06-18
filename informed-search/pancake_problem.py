@@ -45,21 +45,21 @@ def top_heuristic(state:Tuple) -> int:
 
 def top_prime_heuristic(state:Tuple) -> int:
     """
-    Count the pairs of adjecent pancakes that are not in the proper order
+    Count the pairs of adjacent pancakes that are not in the proper order
     Args:
         state (tuple): Order of pancakes
     Returns:
-        int: The number of pairs of adjecent pancakes not in the proper order
+        int: The number of pairs of adjacent pancakes not in the proper order
     """
     pairs = 0
     for p1, p2 in zip(state, state[1:]): # pythonic way to compare pancake placements in a stack, similar to gap, but counting pairs not gaps
-        if p2 != p1 + 1: # non-adjecent pancakes found! 
+        if p2 != p1 + 1: # non-adjacent pancakes found! 
             pairs += 1 # increment pairs
     return pairs
 
 def l_top_prime_heuristic(state:Tuple, l:int) -> int:
     """
-    Counts the l length runs of adjecent pancakes that are not in the proper order
+    Counts the l length runs of adjacent pancakes that are not in the proper order
     Args:
         state (tuple): Order of pancakes
     Returns:
@@ -68,12 +68,12 @@ def l_top_prime_heuristic(state:Tuple, l:int) -> int:
     ls = 0
     for i in range(len(state) - l + 1):
         sub = state[i:i+l] # create "batches" of l runs to test if they are adjecent
-        is_adjecent = all( # checks if all numbers in the run are adjecent
+        is_adjacent = all( # checks if all numbers in the run are adjecent
             sub[j+1] == sub[j] + 1 # is the next number equal to the current number + 1
             for j # the current number sub
             in range(l-1) # iterating through length l run
         ) 
-        if not is_adjecent:
+        if not is_adjacent:
             ls += 1 # increment ls
     return ls 
 
