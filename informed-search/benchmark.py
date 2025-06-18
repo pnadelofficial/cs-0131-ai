@@ -20,7 +20,7 @@ HEURISTICS = {
 def benchmark():
     # generate 100 random stacks and test all results
     stacks = []
-    for _ in range(5):
+    for _ in range(100):
         stack = [i for i in range(1, 6)] # lowering the number of pancakes for testing
         random.shuffle(stack)
         stacks.append(tuple(stack))
@@ -48,7 +48,7 @@ results, stacks = benchmark()
 ## elapsed line chart
 plt.figure(figsize=(7, 5))
 for heuristic in HEURISTICS:
-    plt.plot(range(1,6), [e[0] for e in results[heuristic]], label=heuristic)
+    plt.plot(range(1,101), [e[0] for e in results[heuristic]], label=heuristic)
 
 plt.title("Time to sort vs. Stacks")
 plt.xlabel("Stack")
@@ -61,7 +61,7 @@ plt.clf()
 ## nodes line chart
 plt.figure(figsize=(7, 5))
 for heuristic in HEURISTICS:
-    plt.plot(range(1,6), [e[1] for e in results[heuristic]], label=heuristic)
+    plt.plot(range(1,101), [e[1] for e in results[heuristic]], label=heuristic)
 
 plt.title("Visited nodes vs. Stacks")
 plt.xlabel("Stack")
