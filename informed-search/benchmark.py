@@ -8,13 +8,13 @@ import pandas as pd
 import numpy as np
 
 HEURISTICS = {
-    "Uniform Cost Search": no_heuristic,
-    "Gap Heuristic": gap_heuristic,
-    "Top Heuristic": top_heuristic,
-    "Top' Heuristic": top_prime_heuristic,
-    "3-Top' Heuristic": partial(l_top_prime_heuristic, l=3),
-    "4-Top' Heuristic": partial(l_top_prime_heuristic, l=4),
-    "5-Top' Heuristic": partial(l_top_prime_heuristic, l=5),
+    "UCS": no_heuristic,
+    "Gap": gap_heuristic,
+    "Top": top_heuristic,
+    "Top'": top_prime_heuristic,
+    "3-Top'": partial(l_top_prime_heuristic, l=3),
+    "4-Top'": partial(l_top_prime_heuristic, l=4),
+    "5-Top'": partial(l_top_prime_heuristic, l=5),
 }
 
 def benchmark():
@@ -46,7 +46,7 @@ results, stacks = benchmark()
 # box plot of elasped and of visited nodes
 
 ## elapsed line chart
-plt.figure(figsize=(5.5, 3.5))
+plt.figure(figsize=(7, 5))
 for heuristic in HEURISTICS:
     plt.plot(range(1,6), [e[0] for e in results[heuristic]], label=heuristic)
 
@@ -59,7 +59,7 @@ plt.savefig("elapsed_by_heuristic.pdf", dpi=300, bbox_inches='tight')
 plt.clf()
 
 ## nodes line chart
-plt.figure(figsize=(5.5, 3.5))
+plt.figure(figsize=(7, 5))
 for heuristic in HEURISTICS:
     plt.plot(range(1,6), [e[1] for e in results[heuristic]], label=heuristic)
 
@@ -72,7 +72,7 @@ plt.savefig("nodes_by_heuristic.pdf", dpi=300, bbox_inches='tight')
 plt.clf()
 
 ## elapsed box plot
-plt.figure(figsize=(5.5, 3.5))
+plt.figure(figsize=(7, 5))
 data = np.array([[e[0] for e in results[heuristic]] for heuristic in HEURISTICS]).T
 print(data.shape)
 plt.boxplot(data, tick_labels=HEURISTICS.keys(), patch_artist=True)
@@ -85,7 +85,7 @@ plt.savefig("elapsed_box.pdf", dpi=300, bbox_inches='tight')
 plt.clf()
 
 ## nodes box plot
-plt.figure(figsize=(5.5, 3.5))
+plt.figure(figsize=(7, 5))
 data = np.array([[e[1] for e in results[heuristic]] for heuristic in HEURISTICS]).T
 plt.boxplot(data, tick_labels=HEURISTICS.keys(), patch_artist=True)
 plt.title("Visited nodes")
