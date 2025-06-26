@@ -63,7 +63,7 @@ class Genetic:
         
     def generate_population(self):
         population = []
-        for i in range(self.population_size):
+        for _ in range(self.population_size):
             chromosome = self.generate_chromosome()
             population.append(chromosome)
         return np.array(population)
@@ -99,7 +99,7 @@ class Genetic:
             chromosome[mutation_point] = 0
         return chromosome
 
-    def algorithm(self, to_cull=.5):
+    def algorithm(self, to_cull=.5, print_results=True):
         population = self.generate_population()
         for _ in range(self.generations):
             parents = self.cull(population, to_cull=to_cull)
@@ -113,8 +113,8 @@ class Genetic:
                     child1 = self.mutate(child1)
                 if random.uniform(0,1) < self.mutation_probability:
                     child2 = self.mutate(child2)
-            children.append(child1)
-            children.append(child2)
+                children.append(child1)
+                children.append(child2)
 
             population = np.vstack([np.array(parents), np.array(children)])
 
@@ -123,11 +123,15 @@ class Genetic:
         total_weight = 0
         total_importance = 0
         for i, b in enumerate(best):
+            if b == 0:
+                continue
             weight, importance = BOXES[i+1]
             total_weight += b*weight
             total_importance += b*importance
+            if print_results:
+                print(f"Object {i+1} included, weight: {weight}, importance: {importance}")
 
-        return total_weight, total_importance
+        return total_weight, total_importance, best
 
 
 
