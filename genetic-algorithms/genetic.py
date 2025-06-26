@@ -81,6 +81,7 @@ class Genetic:
             f = self.fitness(population[i])
             fitnesses[i] = f
         
+        population = population[fitnesses.argsort()[::-1]]
         cull_idx = int(to_cull*population.shape[0])
         parents = population[:cull_idx]
         return parents
