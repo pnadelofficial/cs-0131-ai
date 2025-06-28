@@ -170,7 +170,7 @@ class Genetic:
 
             population = np.vstack([np.array(parents), np.array(children)]) # add children to population to create the new generation
 
-        best = self.find_best(population) # find the best peroformer
+        best = self.find_best(population) # find the best performer
 
         # get the final weight and importance
         total_weight = 0
