@@ -1,6 +1,8 @@
 import random
 import numpy as np 
 from typing import Tuple
+import argparse
+import time
 
 # constants
 MAX_WEIGHT = 250
@@ -186,6 +188,27 @@ class Genetic:
 
         return total_weight, total_importance, best
 
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-g", "--generations", type=int, default=100)
+    parser.add_argument("-p", "--population_size", type=int, default=1000)
+    parser.add_argument("-m", "--mutation_probability", type=float, default=.3)
+    args = parser.parse_args()
 
+    g = Genetic(
+        generations=args.generations, 
+        population_size=args.population_size, 
+        mutation_probability=args.mutation_probability
+    )
+    
+    cur = time.time()
+    total_weight, total_importance, best = g.algorithm()
+    elapsed = time.time() - cur
 
+    print()
+    print(f"The algorithm ran for {round(elapsed, 4)} seconds.")
+    print(f"The total weight after optimization is: {total_weight}, with a total importance of {total_importance}.")
+    return total_weight, total_importance, best
 
+if __name__ == '__main__':
+    main()
