@@ -190,6 +190,8 @@ class Genetic:
 
 def main():
     parser = argparse.ArgumentParser()
+    # some default values that work well
+    # they could probably be lower though
     parser.add_argument("-g", "--generations", type=int, default=100)
     parser.add_argument("-p", "--population_size", type=int, default=1000)
     parser.add_argument("-m", "--mutation_probability", type=float, default=.3)
@@ -201,6 +203,7 @@ def main():
         mutation_probability=args.mutation_probability
     )
     
+    # keeping track of the time
     cur = time.time()
     total_weight, total_importance, best = g.algorithm()
     elapsed = time.time() - cur
