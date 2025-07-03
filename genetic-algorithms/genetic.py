@@ -192,8 +192,8 @@ def main():
     parser = argparse.ArgumentParser()
     # some default values that work well
     # they could probably be lower though
-    parser.add_argument("-g", "--generations", type=int, default=100)
-    parser.add_argument("-p", "--population_size", type=int, default=1000)
+    parser.add_argument("-g", "--generations", type=int, default=50)
+    parser.add_argument("-p", "--population_size", type=int, default=500)
     parser.add_argument("-m", "--mutation_probability", type=float, default=.3)
     args = parser.parse_args()
 
