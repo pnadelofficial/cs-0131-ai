@@ -55,14 +55,11 @@ class BayesianNetwork:
 
     def accel_to_likelihood(self, accels):
         max_datum = np.max(accels)
-        counts, _ = np.histogram(accels, bins=LEN_VELOCITIES, density=True, range=(0,max_datum))
-        print(counts.shape)
-        likelihoods = []
-        for datum in accels:
-            index = int(LEN_VELOCITIES*(datum/max_datum))
-            print(index)
-            likelihoods.append(counts[index])
-        return np.array(likelihoods)
+        counts, bin_edges = np.histogram(accels, bins=LEN_VELOCITIES, density=True, range=(0,max_datum))
+        bin_indices = np.digitize(accels, bin_edges) - 1
+        bin_indices = np.clip(bin_indices, 0, LEN_VELOCITIES - 1)
+        likelihoods = counts[bin_indices]
+        return likelihoods
     
     def fit(self):
         for i in range(LEN_OBSERVATIONS):
