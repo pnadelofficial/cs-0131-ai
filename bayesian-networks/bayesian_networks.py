@@ -267,6 +267,14 @@ class BayesianNetwork:
         return np.array(preds), np.array(probs)         
 
 def evaluate(test_ids:List, models:Dict) -> Dict:
+    """
+    Evaluates the test sequences
+    Args:
+        test_ids (list): The ids of what test seqeunces to evaluate
+        model (dict): A mapping of names and models
+    Returns:
+        dict: The results of the evaluation
+    """
     test_sequences = TESTING[test_ids] # select the asked for testing sequence
 
     def analyze_preds_probs(preds:np.array, probs:np.array, model_type:str) -> Tuple[np.array, int, float]:
